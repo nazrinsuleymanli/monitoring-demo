@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 5s          # pull metrics every 5 seconds
+
+scrape_configs:
+  - job_name: 'spring-app'
+    metrics_path: '/actuator/prometheus'      # where the app exposes metrics
+    static_configs:
+      - targets: ['app:8080']                 # 'app' = the compose service name

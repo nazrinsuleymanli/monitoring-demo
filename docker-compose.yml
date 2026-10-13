@@ -1,0 +1,31 @@
+# Full local monitoring stack: Spring Boot app → Prometheus → Grafana
+services:
+
+  app:
+    build: .
+    container_name: monitoring-app
+    ports:
+      - "8080:8080"          # app reachable at localhost:8080
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml   # scrape config
+    ports:
+      - "9090:9090"          # Prometheus UI at localhost:9090
+    depends_on:
+      - app
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin          # login: admin / admin
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning   # auto-configures datasource
+    ports:
+      - "3000:3000"          # Grafana UI at localhost:3000
+    depends_on:
+      - prometheus
